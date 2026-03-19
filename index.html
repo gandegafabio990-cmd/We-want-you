@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>找到幸运的你！/ We Want You 👉！</title>
+  <title>找到幸运的你！/ We Want You 👉</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -46,14 +46,16 @@
       border-radius: 20px;
       padding: 36px 30px;
       margin-bottom: 28px;
-      min-height: 140px;
+      min-height: 160px;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 10px;
       position: relative;
       backdrop-filter: blur(10px);
       box-shadow: 0 0 40px rgba(130, 60, 255, 0.2);
-      transition: box-shadow 0.3s;
+      transition: box-shadow 0.3s, border-color 0.3s;
     }
 
     .display-box.active {
@@ -61,21 +63,28 @@
       border-color: rgba(255, 200, 50, 0.6);
     }
 
-    #selected-name {
-      font-size: 2.8rem;
+    #name-en {
+      font-size: 2.4rem;
       font-weight: 900;
       color: #fff;
       letter-spacing: 3px;
       text-shadow: 0 0 30px rgba(255, 200, 50, 0.8);
-      transition: all 0.1s;
+      line-height: 1.2;
     }
 
-    #selected-name.placeholder {
+    #name-zh {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #f0c040;
+      letter-spacing: 4px;
+      text-shadow: 0 0 16px rgba(255, 200, 50, 0.5);
+    }
+
+    #placeholder-text {
       font-size: 1.1rem;
       color: rgba(255, 255, 255, 0.3);
       font-weight: 400;
       letter-spacing: 1px;
-      text-shadow: none;
     }
 
     .btn-group {
@@ -123,6 +132,18 @@
       transform: translateY(-2px);
     }
 
+    .counter {
+      margin-top: 20px;
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 1px;
+    }
+
+    .counter span {
+      color: #f0c040;
+      font-weight: 700;
+    }
+
     /* Confetti */
     .confetti-piece {
       position: fixed;
@@ -139,49 +160,75 @@
       0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
       100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
     }
-
-    .counter {
-      margin-top: 20px;
-      font-size: 0.78rem;
-      color: rgba(255,255,255,0.3);
-      letter-spacing: 1px;
-    }
-
-    .counter span {
-      color: #f0c040;
-      font-weight: 700;
-    }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>🎉 找到幸运的你！</h1>
-  <div class="subtitle">✨ Mid-year Medical Review · Culture Talk · We Want You 👉</div>
+  <h1>🎉 找到幸运的你！/ We Want You 👉</h1>
+  <div class="subtitle">✨ Mid-year Medical Review · Culture Talk</div>
 
   <div class="display-box" id="display-box">
-    <div id="selected-name" class="placeholder">等待抽取 / Waiting...</div>
+    <div id="placeholder-text">等待抽取 / Waiting...</div>
+    <div id="name-en" style="display:none;"></div>
+    <div id="name-zh" style="display:none;"></div>
   </div>
 
   <div class="btn-group">
-    <button class="btn btn-start" id="btn-start" onclick="startSelection()">🎲 开始抽取</button>
-    <button class="btn btn-reset" onclick="resetSelection()">🔄 重置</button>
+    <button class="btn btn-start" id="btn-start" onclick="startSelection()">🎲 开始抽取 / Draw</button>
+    <button class="btn btn-reset" onclick="resetSelection()">🔄 重置 / Reset</button>
   </div>
 
-  <div class="counter">已抽取 <span id="count">0</span> 人 / 共 45 人</div>
+  <div class="counter">已抽取 / Drawn: <span id="count">0</span> &nbsp;|&nbsp; 共 / Total: 45</div>
 </div>
 
 <script>
   const allNames = [
-    "Norah LAI", "白圆圆", "崔雪亮", "陈斌", "范嘉琦",
-    "郭旭东", "黄军华", "李含章", "李永文", "李越",
-    "梁湘樱", "刘思露", "刘腾飞", "刘颖中", "刘月",
-    "吕元", "马迪", "马冬梅", "毛宇嵘", "潘玮炜",
-    "饶秀芹", "沈慧", "孙斌", "田红梅", "佟彤",
-    "王静", "王钧堳", "韦薇", "温悦萌", "吴婷婷",
-    "谢姝颖", "闫萌", "姚红波", "Kevin YIN", "臧今楠",
-    "章冬银", "姚瑶", "Cherrie TAM", "高娟", "曹帅",
-    "王文慧", "宋析伶", "黄炎", "李子健", "张倩"
+    { en: "Norah LAI",       zh: "Norah LAI" },
+    { en: "Yuanyuan BAI",    zh: "白圆圆" },
+    { en: "Xueliang CUI",    zh: "崔雪亮" },
+    { en: "Christian CHEN",  zh: "陈斌" },
+    { en: "Tina FAN",        zh: "范嘉琦" },
+    { en: "Xudong GUO",      zh: "郭旭东" },
+    { en: "Junhua HUANG",    zh: "黄军华" },
+    { en: "Hanzhang LI",     zh: "李含章" },
+    { en: "Yongwen LI",      zh: "李永文" },
+    { en: "Yue LI",          zh: "李越" },
+    { en: "Xiangying LIANG", zh: "梁湘樱" },
+    { en: "Silu LIU",        zh: "刘思露" },
+    { en: "Tengfei LIU",     zh: "刘腾飞" },
+    { en: "Yulia LIU",       zh: "刘颖中" },
+    { en: "Yue LIU",         zh: "刘月" },
+    { en: "Yuan LV",         zh: "吕元" },
+    { en: "Di MA",           zh: "马迪" },
+    { en: "Dongmei MA",      zh: "马冬梅" },
+    { en: "Yurong MAO",      zh: "毛宇嵘" },
+    { en: "Vivian PAN",      zh: "潘玮炜" },  
+    { en: "Yolanda RAO",     zh: "饶秀芹" },
+    { en: "Hui SHEN",        zh: "沈慧" },
+    { en: "Bin SUN",         zh: "孙斌" },
+    { en: "Maggie TIAN",     zh: "田红梅" },
+    { en: "Tong TONG",       zh: "佟彤" },
+    { en: "Fiona WANG",      zh: "王静" },
+    { en: "Junhang WANG",    zh: "王钧堳" },
+    { en: "Amber WEI",       zh: "韦薇" },
+    { en: "Yuemeng WEN",     zh: "温悦萌" },
+    { en: "Tingting WU",     zh: "吴婷婷" },
+    { en: "Shuying XIE",     zh: "谢姝颖" },
+    { en: "Monica YAN",      zh: "闫萌" },
+    { en: "Hongbo YAO",      zh: "姚红波" },
+    { en: "Kevin YIN",       zh: "Kevin YIN" },
+    { en: "Jinnan ZANG",     zh: "臧今楠" },
+    { en: "Dongyin ZHANG",   zh: "章冬银" },
+    { en: "Yao YAO",         zh: "姚瑶" },
+    { en: "Cherrie TAM",     zh: "Cherrie TAM" },
+    { en: "Juan GAO",        zh: "高娟" },
+    { en: "Shuai CAO",       zh: "曹帅" },
+    { en: "Wenhui WANG",     zh: "王文慧" },
+    { en: "Xiling SONG",     zh: "宋析伶" },
+    { en: "Yan HUANG",       zh: "黄炎" },
+    { en: "Zijian LI",       zh: "李子健" },
+    { en: "Qian ZHANG",      zh: "张倩" }
   ];
 
   let remaining = [...allNames];
@@ -192,35 +239,39 @@
   function startSelection() {
     if (isRunning) return;
     if (remaining.length === 0) {
-      document.getElementById('selected-name').textContent = '🎊 所有人已抽完！';
-      document.getElementById('selected-name').classList.remove('placeholder');
+      document.getElementById('name-en').textContent = '🎊 所有人已抽完！';
+      document.getElementById('name-zh').textContent = 'Everyone has been drawn!';
+      showNames();
       return;
     }
 
     isRunning = true;
     document.getElementById('btn-start').disabled = true;
     document.getElementById('display-box').classList.remove('active');
-
-    const nameEl = document.getElementById('selected-name');
-    nameEl.classList.remove('placeholder');
+    document.getElementById('placeholder-text').style.display = 'none';
+    showNames();
 
     let speed = 60;
     let elapsed = 0;
     const duration = 2800;
 
-    animInterval = setInterval(() => {
+    function tick() {
       const randomIdx = Math.floor(Math.random() * remaining.length);
-      nameEl.textContent = remaining[randomIdx];
+      document.getElementById('name-en').textContent = remaining[randomIdx].en;
+      document.getElementById('name-zh').textContent = remaining[randomIdx].zh;
       elapsed += speed;
 
-      if (elapsed > duration * 0.6) speed = 120;
-      if (elapsed > duration * 0.8) speed = 200;
+      if (elapsed > duration * 0.6) speed = 130;
+      if (elapsed > duration * 0.8) speed = 220;
 
       if (elapsed >= duration) {
-        clearInterval(animInterval);
         pickFinal();
+      } else {
+        animInterval = setTimeout(tick, speed);
       }
-    }, speed);
+    }
+
+    tick();
   }
 
   function pickFinal() {
@@ -229,30 +280,35 @@
     remaining.splice(idx, 1);
     selectedCount++;
 
-    const nameEl = document.getElementById('selected-name');
-    nameEl.textContent = winner;
+    document.getElementById('name-en').textContent = winner.en;
+    document.getElementById('name-zh').textContent = winner.zh;
     document.getElementById('display-box').classList.add('active');
     document.getElementById('count').textContent = selectedCount;
 
     launchConfetti();
-
     isRunning = false;
     document.getElementById('btn-start').disabled = false;
   }
 
+  function showNames() {
+    document.getElementById('name-en').style.display = 'block';
+    document.getElementById('name-zh').style.display = 'block';
+  }
+
   function resetSelection() {
     if (isRunning) {
-      clearInterval(animInterval);
+      clearTimeout(animInterval);
       isRunning = false;
     }
     remaining = [...allNames];
     selectedCount = 0;
     document.getElementById('count').textContent = 0;
     document.getElementById('btn-start').disabled = false;
-
-    const nameEl = document.getElementById('selected-name');
-    nameEl.textContent = '等待抽取 / Waiting...';
-    nameEl.classList.add('placeholder');
+    document.getElementById('placeholder-text').style.display = 'block';
+    document.getElementById('name-en').style.display = 'none';
+    document.getElementById('name-zh').style.display = 'none';
+    document.getElementById('name-en').textContent = '';
+    document.getElementById('name-zh').textContent = '';
     document.getElementById('display-box').classList.remove('active');
   }
 
